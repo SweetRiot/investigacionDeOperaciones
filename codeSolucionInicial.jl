@@ -41,7 +41,7 @@ function tiempo_total_especialista(proyectosAsignados)
     return tiempototal
 end
 
-
+#ASIGNACION DE PROYECTOS
 for m in 1:200
     especialista_mas_nuevo_proyecto=[]
     for i in 1:20
@@ -53,17 +53,6 @@ for m in 1:200
     
 end    
 
-
-#Aquí asigno los proyectos a mi lista de 20 listas
-#Las sublistas contienen elementos que tienen la forma (nombre del proyecto, fecha maxima, tiempo del especialista)
-# for m in 1:200
-#     lista_tiempos_por_proyecto=[]
-#     for i in 1:20
-#         push!(lista_tiempos_por_proyecto,Tiempo_procesamiento[i][m])
-#     end
-#     indice_del_menor_tiempo=argmin(lista_tiempos_por_proyecto)
-#     push!(asignacion_de_proyectos[indice_del_menor_tiempo],(Proyectos_fecha_max[m][1],Proyectos_fecha_max[m][2],Tiempo_procesamiento[indice_del_menor_tiempo][m]))
-# end
 
 function cuanto_de_retraso_tiene(lista)
     retraso_general=0    
@@ -80,19 +69,62 @@ function cuanto_de_retraso_tiene(lista)
             end
             
         end
-        #println("El tiempo tiempo_absoluto es: ",tiempo_absoluto)
-        println("retraso por especialista: ", retraso_por_especialista)
         retraso_general=retraso_general+retraso_por_especialista
             
     end
     return retraso_general
 end    
 
-println("El tiempo de retraso en los 200 proyectos es: ",cuanto_de_retraso_tiene(asignacion_de_proyectos))
-for i in 1:20
-    println(length(asignacion_de_proyectos[i]))
-end
+
 
 for i in 1:20
+    asignacion_de_proyectos[i]=sort(asignacion_de_proyectos[i], by = x->x[2])
     println(asignacion_de_proyectos[i])
 end
+
+println("El tiempo de retraso en los 200 proyectos es: ",cuanto_de_retraso_tiene(asignacion_de_proyectos))
+
+
+#CODIGO DE INTERCAMBIO DEL PROYECTO
+
+# for i in 1:17
+#     global copia
+#     copia=generator(copia)
+# end    
+
+# println(generator(copia))
+# println(generator(generator(copia)))
+# println(generator(generator(generator(copia))))
+
+
+# function generator(lista_de_proyectos_raw)
+#     lista_de_proyectos=lista_de_proyectos_raw[:]
+    
+#     tiempos_de_procesamiento_x_especialista=[]
+
+#     for i in 1:20
+#         push!(tiempos_de_procesamiento_x_especialista,tiempo_total_especialista(lista_de_proyectos[i]))    
+#     end
+
+#     mayor=argmax(tiempos_de_procesamiento_x_especialista)
+#     menor=argmin(tiempos_de_procesamiento_x_especialista)
+#     println("LISTA:", tiempos_de_procesamiento_x_especialista)
+
+    
+#     auxiliar=lista_de_proyectos[mayor][3] #primer pryecto del que tiene más
+#     lista_de_proyectos[mayor][3]=lista_de_proyectos[menor][1] #primer proyecto del que tiene menos
+#     lista_de_proyectos[menor][1]=auxiliar
+#     return lista_de_proyectos
+# end    
+
+
+# newlist=generator(asignacion_de_proyectos)
+# if newlist==asignacion_de_proyectos
+#     println("Same")
+# end 
+# lista1=generator(copia)
+# lista2=generator(lista1)
+# lista3=generator(lista2)
+# generator(generator(generator(lista3)))
+
+
