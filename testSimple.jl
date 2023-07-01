@@ -31,10 +31,10 @@ lista=[1,2,3,4,5,6]
 
 function change(lista)
     newlista=lista[:]
-    newlista[1]=1000
-    return newlista
+    lista[1]=1000
+    return lista
 end    
 
-new=change(lista)
 
-println(lista)
+
+println(change(lista))
