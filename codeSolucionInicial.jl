@@ -84,8 +84,8 @@ function retraso_especialista(lista)
     end    
 end    
 
-function random_swap_asig_verif(lista_de_proyectos_raw)
-    lista_de_proyectos=lista_de_proyectos_raw[:]
+function asignacion_random(lista_de_proyectos_raw)
+    lista_de_proyectos=deepcopy(lista_de_proyectos_raw)
     lista_de_retrasos=[]
     for i in 1:cant_especialistas
         push!(lista_de_retrasos,retraso_especialista(lista_de_proyectos[i]))
@@ -105,16 +105,14 @@ function random_swap_asig_verif(lista_de_proyectos_raw)
     tiempo_correcto(lista_de_proyectos[indice_del_puntual],indice_del_puntual)
     tiempo_correcto(lista_de_proyectos[indice_del_tardon],indice_del_tardon)
     sort_x_fem(lista_de_proyectos)
-    nuevo_retraso=retraso_general(lista_de_proyectos)
-    #original_retraso=sum(lista_de_retrasos)
-    original_retraso=retraso_general(lista_de_proyectos_raw)
-    if nuevo_retraso < original_retraso
+    #original_retraso=retraso_general(lista_de_proyectos_raw)
+    if retraso_general(lista_de_proyectos) < sum(lista_de_retrasos)
         temporal=lista_de_proyectos_raw[indice_del_tardon][indice_rand_tardon]
         lista_de_proyectos_raw[indice_del_tardon][indice_rand_tardon]=lista_de_proyectos_raw[indice_del_puntual][indice_rand_puntual]
         lista_de_proyectos_raw[indice_del_puntual][indice_rand_puntual]=temporal
         sort_x_fem(lista_de_proyectos_raw)
+        return lista_de_proyectos_raw
     end
-
     return lista_de_proyectos_raw
 end   
 
@@ -158,14 +156,10 @@ end
 #-----EJECUCION DE FUNCIONES
 
 primera_solucion(asignacion_de_proyectos,Tiempo_procesamiento,Proyectos_fecha_max)
-println(retraso_general(asignacion_de_proyectos))
 sort_x_fem(asignacion_de_proyectos)
-println(retraso_general(asignacion_de_proyectos))
 for i in 1:iteraciones
-    random_swap_asig_verif(asignacion_de_proyectos)
+    asignacion_random(asignacion_de_proyectos)
 end
 
-#Comparar
-
 println("Retraso de $cant_proyectos proyectos con $iteraciones iteraciones: ",retraso_general(asignacion_de_proyectos))
-#print_x_especialista(asignacion_de_proyectos)
+print_x_especialista(asignacion_de_proyectos)
