@@ -1,22 +1,8 @@
 
-# # list=[1,2,3,4]
+list=[1,203,33,4]
+print(sort(list))
 
-# # changer()
 
-
-# # new_list=changer(list)
-
-# # if new_list==list
-# #     print("its same")
-# # end    
-# # println(new_list)
-# # println(list)
-
-# # function changer(lista_raw)
-# #     lista=lista_raw[:]
-# #     lista[1]=1999
-# # return lista    
-# # end
 
 # lista = [("a", 45), ("b", 32), ("d", 11), ("e", 33)]
 
@@ -43,12 +29,12 @@
 # println(numero)
 # println(typeof(numero))
 
-dic=[Dict("P001" => 490), Dict("P002" => 202), Dict("P003" => 136)]
-Proyectos=[]
-for i in 1:3 
-    arreglo,reg=first(collect(dic[i]))
-    println(arreglo)
-    push!(Proyectos,[arreglo,reg])
-end  
+# dic=[Dict("P001" => 490), Dict("P002" => 202), Dict("P003" => 136)]
+# Proyectos=[]
+# for i in 1:3 
+#     arreglo,reg=first(collect(dic[i]))
+#     println(arreglo)
+#     push!(Proyectos,[arreglo,reg])
+# end  
 
-print(Proyectos)
+# print(Proyectos)

@@ -3,6 +3,7 @@ import Pkg;
 Pkg.add("JSON")
 using JSON;
 using Random;
+using DelimitedFiles;
 datos = JSON.parsefile("instancia01.json")
 
 Tiempo_procesamiento=datos["tiempo_procesamiento"]
@@ -17,7 +18,7 @@ cant_especialistas=length(Especialistas)
 cant_proyectos=length(diccionarios)
 iteraciones=parse(Int,ARGS[1])
 LISTA_TABU=Set{Vector{Any}}()
-tabucount=0
+tabu_count=0
 #-----FIN DE LA DEFINICION DE VARIABLES GLOBALES-----
 
 #-----TRATAMIENTOS DE LAS ESTRUCTURAS DE DATOS
@@ -37,6 +38,8 @@ end
 #-----FIN DEL TRATAMIENTO DE LAS ESTRUCTURAS DE DATOS-----
 
 #-----DEFINICION DE TODAS LAS FUNCIONES
+
+#esta funcion devuelve cuánto tiempo de procesamiento tiene todos los proyectos asignados de un especialista
 function tiempo_total_especialista(proyectosAsignados)
     tiempo_total=0
     if proyectosAsignados==[]
@@ -50,6 +53,7 @@ function tiempo_total_especialista(proyectosAsignados)
     return tiempo_total
 end
 
+#Esta funcion devuelve el retraso de los 20 especialistas sumado
 function retraso_general(lista)
     retraso_general=0    
     for i in 1:cant_especialistas
@@ -68,7 +72,7 @@ function retraso_general(lista)
     end
     return retraso_general
 end  
-
+#solo se le pasa los proyectos de un especialista y te da el retraso
 function retraso_especialista(lista)
     if isempty(lista)
         return 0
@@ -86,8 +90,10 @@ function retraso_especialista(lista)
     end    
 end    
 
+#Funcion que escoje a los especialista con mayor y menor retraso, luego aleatoriamente hace
+#un swap entre proyectos, si esta nueva asignacion tiene menor retraso, la nueva asignacion procede. 
 function asignacion_random(lista_de_proyectos_raw)
-    global tabucount
+    global tabu_count
     lista_de_proyectos=deepcopy(lista_de_proyectos_raw)
     lista_de_retrasos=[]
     for i in 1:cant_especialistas
@@ -110,7 +116,7 @@ function asignacion_random(lista_de_proyectos_raw)
     tiempo_correcto(lista_de_proyectos[indice_del_tardon],indice_del_tardon)
     sort_x_fem(lista_de_proyectos)
     if lista_de_proyectos in LISTA_TABU
-        tabucount+=1
+        tabu_count+=1
         return lista_de_proyectos_raw
     end    
     if retraso_general(lista_de_proyectos) < sum(lista_de_retrasos)
@@ -126,12 +132,14 @@ function asignacion_random(lista_de_proyectos_raw)
     return lista_de_proyectos_raw
 end   
 
+#Retorna los proyectos de cada especialista
 function print_x_especialista(asig_proyect)
     for i in 1:cant_especialistas
         println("E",i," ",asig_proyect[i])
     end
 end   
 
+#Ordena en orden ascendente a las fechas máximas de entrega todos los proyectos
 function sort_x_fem(lista_de_proyectos)
     for i in 1:cant_especialistas
         lista_de_proyectos[i]=sort(lista_de_proyectos[i], by = x->x[2])
@@ -139,7 +147,12 @@ function sort_x_fem(lista_de_proyectos)
     return lista_de_proyectos
 end
 
+#funcion que retorna la primera asignacion
+#esta solucion va asignando de acuerdo a la cantidad de tiempo transcurrido. 
+
 function primera_solucion(asig_proyect,processing_time,FEM)
+    #Buena forma de hacerlo
+    #Solo tenemos que reorganizarlo, las fechas de procesamiento en el orden de las fechas máximas de entrega. 
     for m in 1:cant_proyectos
         especialista_mas_nuevo_proyecto=[]
         for i in 1:20
@@ -153,6 +166,36 @@ function primera_solucion(asig_proyect,processing_time,FEM)
     return asig_proyect
 end 
 
+#Esta nueva solucion genera una mejora de 24 días, 681 horas, pasa de 7675 a 6994
+function primera_solucion2(asig_proyect,processing_time,FEM)
+    FEM_order=deepcopy(FEM)
+    processing_time_order=deepcopy(processing_time)
+    FEM_order=sort(FEM, by = x -> x[2])  
+    #println(FEM_order)
+    
+    for m in 1:cant_proyectos
+        especialista_mas_nuevo_proyecto=[]
+        #este for mete a la lista anterior, los tiempos de procesamiento que lleva cada especialista
+        #se escoje al que menos tiempo tenga y se le asigna ese proyecto
+        numero_del_proye = parse(Int,match(r"\d+",FEM_order[m][1]).match)
+        for i in 1:20
+            push!(especialista_mas_nuevo_proyecto,tiempo_total_especialista(asig_proyect[i])+processing_time[i][numero_del_proye])
+        end
+    
+        indice_del_espe_asig=argmin(especialista_mas_nuevo_proyecto)
+
+
+        push!(asig_proyect[indice_del_espe_asig],[FEM_order[m][1],FEM_order[m][2],processing_time[indice_del_espe_asig][m]])
+        
+    end
+    
+    for i in 1:20
+        tiempo_correcto(asig_proyect[i],i) 
+    end    
+    return asig_proyect
+end    
+
+#Funcion que luego del swap de proyectos aleatorios, pone los tiempos de procesamiento adecuados a cada asignacion nueva. 
 function tiempo_correcto(proyectos_x_especialista,numero_del_espe)
     for proyecto in proyectos_x_especialista
         numero_del_proye = parse(Int,match(r"\d+", proyecto[1]).match)
@@ -167,10 +210,18 @@ end
 
 primera_solucion(asignacion_de_proyectos,Tiempo_procesamiento,Proyectos_fecha_max)
 sort_x_fem(asignacion_de_proyectos)
-for i in 1:iteraciones
-    asignacion_random(asignacion_de_proyectos)
-end
 
-println("Retraso de $cant_proyectos proyectos con $iteraciones iteraciones: ",retraso_general(asignacion_de_proyectos))
-#print_x_especialista(asignacion_de_proyectos)
-println("Cantidad que esta en tabu $tabucount")
+# for i in 1:iteraciones
+#     asignacion_random(asignacion_de_proyectos)
+# end
+println(retraso_general(asignacion_de_proyectos))
+# println("Retraso de $cant_proyectos proyectos con $iteraciones iteraciones: ",retraso_general(asignacion_de_proyectos))
+# println("Cantidad de soluciones que omito por estar en la lista tabu $tabu_count")
+# writedlm("resultados.csv", asignacion_de_proyectos, ',')
+# # #retorna todos los proyectos por especialista.
+# #print_x_especialista(asignacion_de_proyectos)
+
+# for i in 1:cant_especialistas
+#     println(retraso_especialista(asignacion_de_proyectos[i]))
+# end 
+# print_x_especialista(asignacion_de_proyectos)
