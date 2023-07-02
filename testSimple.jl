@@ -27,14 +27,28 @@
 # println(lista_ordenada)
 # using Random; 
 
-lista=[1,2,3,4,5,6]
+# lista=[[1,2,3],2,3,4,5,6]
 
-function change(lista)
-    newlista=lista[:]
-    lista[1]=1000
-    return lista
-end    
+# function change(lista)
+#     newlista=lista[:]
+#     lista[3]=1000
+#     return lista
+# end    
 
 
 
-println(change(lista))
+# change(lista[1])
+# println(lista)
+# numero = parse(Int,match(r"\d+", "P200").match)
+# println(numero)
+# println(typeof(numero))
+
+dic=[Dict("P001" => 490), Dict("P002" => 202), Dict("P003" => 136)]
+Proyectos=[]
+for i in 1:3 
+    arreglo,reg=first(collect(dic[i]))
+    println(arreglo)
+    push!(Proyectos,[arreglo,reg])
+end  
+
+print(Proyectos)

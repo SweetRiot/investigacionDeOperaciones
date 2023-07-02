@@ -19,11 +19,11 @@ iteraciones=parse(Int,ARGS[1])
 #-----FIN DE LA DEFINICION DE VARIABLES GLOBALES-----
 
 #-----TRATAMIENTOS DE LAS ESTRUCTURAS DE DATOS
-#Pasar de diccionario a pares ordenados
+#Pasar de diccionario a arrays
 Proyectos_fecha_max=[]
 for i in 1:cant_proyectos
-    (name_proyecto,fecha_max)=first(collect(diccionarios[i]))
-    push!(Proyectos_fecha_max,(name_proyecto,fecha_max))
+    name_proyecto,fecha_max=first(collect(diccionarios[i]))
+    push!(Proyectos_fecha_max,[name_proyecto,fecha_max])
 end    
 
 #Creo sublistas que contendrán los proyectos de cada especialista
@@ -102,14 +102,19 @@ function random_swap_asig_verif(lista_de_proyectos_raw)
     aux=lista_de_proyectos[indice_del_tardon][indice_rand_tardon]
     lista_de_proyectos[indice_del_tardon][indice_rand_tardon]=lista_de_proyectos[indice_del_puntual][indice_rand_puntual]
     lista_de_proyectos[indice_del_puntual][indice_rand_puntual]=aux
-
+    tiempo_correcto(lista_de_proyectos[indice_del_puntual],indice_del_puntual)
+    tiempo_correcto(lista_de_proyectos[indice_del_tardon],indice_del_tardon)
+    sort_x_fem(lista_de_proyectos)
     nuevo_retraso=retraso_general(lista_de_proyectos)
-    original_retraso=sum(lista_de_retrasos)
+    #original_retraso=sum(lista_de_retrasos)
+    original_retraso=retraso_general(lista_de_proyectos_raw)
     if nuevo_retraso < original_retraso
         temporal=lista_de_proyectos_raw[indice_del_tardon][indice_rand_tardon]
         lista_de_proyectos_raw[indice_del_tardon][indice_rand_tardon]=lista_de_proyectos_raw[indice_del_puntual][indice_rand_puntual]
         lista_de_proyectos_raw[indice_del_puntual][indice_rand_puntual]=temporal
+        sort_x_fem(lista_de_proyectos_raw)
     end
+
     return lista_de_proyectos_raw
 end   
 
@@ -134,21 +139,33 @@ function primera_solucion(asig_proyect,processing_time,FEM)
         end
     
         indice_del_espe_asig=argmin(especialista_mas_nuevo_proyecto)
-        push!(asig_proyect[indice_del_espe_asig],(FEM[m][1],FEM[m][2],processing_time[indice_del_espe_asig][m]))
+        push!(asig_proyect[indice_del_espe_asig],[FEM[m][1],FEM[m][2],processing_time[indice_del_espe_asig][m]])
         
     end 
     return asig_proyect
 end 
+
+function tiempo_correcto(proyectos_x_especialista,numero_del_espe)
+    for proyecto in proyectos_x_especialista
+        numero_del_proye = parse(Int,match(r"\d+", proyecto[1]).match)
+        #print("numero: ",numero_del_proye," Espe: $numero_del_espe  "," process: ")
+        proyecto[3]=Tiempo_procesamiento[numero_del_espe][numero_del_proye]
+    end
+end
 #-----FIN DE LA DEFINICION DE LAS FUNCIONES-----
 
 
 #-----EJECUCION DE FUNCIONES
 
 primera_solucion(asignacion_de_proyectos,Tiempo_procesamiento,Proyectos_fecha_max)
+println(retraso_general(asignacion_de_proyectos))
 sort_x_fem(asignacion_de_proyectos)
+println(retraso_general(asignacion_de_proyectos))
 for i in 1:iteraciones
     random_swap_asig_verif(asignacion_de_proyectos)
-    sort_x_fem(asignacion_de_proyectos)
-end 
+end
+
+#Comparar
 
 println("Retraso de $cant_proyectos proyectos con $iteraciones iteraciones: ",retraso_general(asignacion_de_proyectos))
+#print_x_especialista(asignacion_de_proyectos)
