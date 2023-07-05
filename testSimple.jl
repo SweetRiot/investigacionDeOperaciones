@@ -1,8 +1,15 @@
 
-list=[1,203,33,4]
-print(sort(list))
+# list=[-2,-203,-33,-4]
+# deleteat!(list,3)
+# println(list)
 
-
+# function Hola()
+#     return 34,(70,80)
+# end
+# a,(b,c)=Hola()
+# println(a)
+# println(b)
+# println(c)
 
 # lista = [("a", 45), ("b", 32), ("d", 11), ("e", 33)]
 
@@ -38,3 +45,21 @@ print(sort(list))
 # end  
 
 # print(Proyectos)
+
+# for i in 1:10
+#     if i == 5
+#         println("SALIENDO")
+#         continue  # Salta la iteración cuando i es igual a 5
+#     end
+#     println(i)
+# end
+lista=[1,2,3,4,5,6]
+# for i in lista
+#     println(i)
+# end    
+println(argmin(lista))
+# M=Missing
+# function suma(a)
+#     return a+1
+# end   
+# suma(M)

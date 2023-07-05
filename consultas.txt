@@ -1,0 +1,20 @@
+reviso la lista tabu en cada posible movimiento que haré, cuando estoy dentro de una iteracion. 
+
+en cada iteracion hay infinidad de movimientos que puedo hacer. 
+
+problemas: 
+1._ Estoy restringido a la cantidad de proyectos que he asignado.
+Debo cambiar el algoritmo de random_swap para no estar limitado. 
+
+2._ Elegir la estructura de datos adecuada a mi lista tabú. 
+3._ Cambiar la estructura de datos de mi lista tabu
+
+El tamaño de la lista tabú la voy eligiendo yo. 
+Tiene estructura FIFO
+
+
+Estoy entrando en optimos locales, por ello que cuando realizo muchas iteraciones
+ya no veo mejorías. 
+
+
+En el quizz viene hasta el corte, lo que vimos antes del break. 
