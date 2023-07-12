@@ -53,13 +53,20 @@
 #     end
 #     println(i)
 # end
-lista=[1,2,3,4,5,6]
+lista=Set([1,2,3,4,5,6])
 # for i in lista
 #     println(i)
 # end    
-println(argmin(lista))
+# println(argmin(lista))
 # M=Missing
 # function suma(a)
 #     return a+1
 # end   
 # suma(M)
+lista2=Set([6,5,4,3,2,1,67])
+
+@time if isequal(lista,lista2)
+    print("SON IGUALES")
+else 
+    println("NO SON IGUALES")    
+end    

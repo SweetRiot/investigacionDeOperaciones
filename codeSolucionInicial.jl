@@ -4,6 +4,7 @@ Pkg.add("JSON")
 using JSON;
 using Random;
 using DelimitedFiles;
+#using BenchmarkTools
 datos = JSON.parsefile("instancia01.json")
 
 Tiempo_procesamiento=datos["tiempo_procesamiento"]
@@ -230,6 +231,27 @@ function tiempo_correcto(proyectos_x_especialista,numero_del_espe)
     end
 end
 
+
+function todosAsignados(asignaciones)
+    proyectosNombres=Set([])
+    for proyecto in Proyectos_fecha_max
+        push!(proyectosNombres,proyecto[1])
+    end
+    tengoProyectos=Set([])
+    for i in 1:20
+        for proyectoAsig in asignaciones[i]
+            push!(tengoProyectos,proyectoAsig[1])
+        end
+    end    
+
+    if isequal(proyectosNombres,tengoProyectos)
+        return true
+    else
+        return false
+    end        
+
+end   
+
 #-----FIN DE LA DEFINICION DE LAS FUNCIONES-----
 
 
@@ -238,12 +260,13 @@ end
 #Solución inicial
 primera_solucion2(asignacion_de_proyectos,Tiempo_procesamiento,Proyectos_fecha_max)
 
-solucion_actual=deepcopy(sort_x_fem(asignacion_de_proyectos))
-println(retraso_general(solucion_actual))
+#solucion_actual=deepcopy(sort_x_fem(asignacion_de_proyectos))
+solucion_actual=deepcopy(asignacion_de_proyectos)
 #Fin de la solucion inicial
-
+println("________RESULTADOS_________")
+println("Retraso de la primera solucion: ",retraso_general(solucion_actual))
 #TABU SEARCH
-for i in 1:iteraciones
+@time for i in 1:iteraciones
     global cantidad_de_vecinos
     global solucion_actual
     global asignacion_de_proyectos
@@ -276,16 +299,22 @@ for i in 1:iteraciones
     if i%100==0
         for i in 1:100
             asignacion_random(asignacion_de_proyectos)
-        end  
+        end
+        solucion_actual=deepcopy(asignacion_de_proyectos)  
     end
     #fin del periodo de intensificación
-
-    solucion_actual=deepcopy(asignacion_de_proyectos)
+    #Esto no hace que este atrapado en un optimo local ? 
+    
 end
+
+
 
 println("Retraso de $cant_proyectos proyectos con $iteraciones iteraciones: ",retraso_general(asignacion_de_proyectos))
 writedlm("resultados.csv", asignacion_de_proyectos, ',')
+println("Están todos asignados: ",todosAsignados(asignacion_de_proyectos)) 
+println("Tamaño de la lista tabu: $size_of_tabu")
+println("Cantidad de vecinos por iteracion: $cantidad_de_vecinos")
+# for i in 1:20
+#     println("E",i," ",asignacion_de_proyectos[i])
+# end    
 #EL ARCHIVO QUE CONTIENE EL RESULTADO DE LA SOLUCION SE LLAMA, resultados.csv 
-#PAGAR EJECUTAR ESTE ARCHIVO TIENES QUE EJECUTARLO EN LA TERMINAL CON EL SIGUIENTE COMANDO
-# julia codeSolucionInicial.jl 100000
-#100000 es la cantidad de iteraciones, si deseas más o menos cambialo. 
